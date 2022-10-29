@@ -1,0 +1,258 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 800px;
+                 background-color: #eeeeee;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 800px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#6600ff", "id": "Google Account", "label": "Google Account", "shape": "circle"}, {"color": "#6600ff", "id": "Google", "label": "Google", "shape": "circle"}, {"color": "#6600ff", "id": "Autocomplete", "label": "Autocomplete", "shape": "circle"}, {"color": "#6600ff", "id": "Google Search", "label": "Google Search", "shape": "circle"}, {"color": "#6600ff", "id": "Smartphone", "label": "Smartphone", "shape": "circle"}, {"color": "#6600ff", "id": "Social media", "label": "Social media", "shape": "circle"}, {"color": "#6600ff", "id": "Michelangelo", "label": "Michelangelo", "shape": "circle"}, {"color": "#6600ff", "id": "Mona Lisa", "label": "Mona Lisa", "shape": "circle"}, {"color": "#6600ff", "id": "David", "label": "David", "shape": "circle"}, {"color": "#6600ff", "id": "Uffizi", "label": "Uffizi", "shape": "circle"}, {"color": "#6600ff", "id": "Florence", "label": "Florence", "shape": "circle"}, {"color": "#6600ff", "id": "Giovanni da San Giovanni", "label": "Giovanni da San Giovanni", "shape": "circle"}, {"color": "#6600ff", "id": "Past", "label": "Past", "shape": "circle"}, {"color": "#6600ff", "id": "Present", "label": "Present", "shape": "circle"}, {"color": "#6600ff", "id": "Head louse", "label": "Head louse", "shape": "circle"}, {"color": "#6600ff", "id": "Vaccine", "label": "Vaccine", "shape": "circle"}, {"color": "#6600ff", "id": "Technology", "label": "Technology", "shape": "circle"}, {"color": "#6600ff", "id": "Ospedale degli Innocenti", "label": "Ospedale degli Innocenti", "shape": "circle"}, {"color": "#6600ff", "id": "Ghirlandaio", "label": "Ghirlandaio", "shape": "circle"}, {"color": "#6600ff", "id": "Adoration of the Magi", "label": "Adoration of the Magi", "shape": "circle"}, {"color": "#6600ff", "id": "Historian", "label": "Historian", "shape": "circle"}, {"color": "#6600ff", "id": "Writer", "label": "Writer", "shape": "circle"}, {"color": "#6600ff", "id": "Massacre of the Innocents", "label": "Massacre of the Innocents", "shape": "circle"}, {"color": "#6600ff", "id": "Orphan", "label": "Orphan", "shape": "circle"}, {"color": "#6600ff", "id": "IT Week", "label": "IT Week", "shape": "circle"}, {"color": "#6600ff", "id": "2022", "label": "2022", "shape": "circle"}, {"color": "#6600ff", "id": "Ukraine", "label": "Ukraine", "shape": "circle"}, {"color": "#6600ff", "id": "Kyiv", "label": "Kyiv", "shape": "circle"}, {"color": "#6600ff", "id": "Admir Masic", "label": "Admir Masic", "shape": "circle"}, {"color": "#6600ff", "id": "Massachusetts Institute of Technology", "label": "Massachusetts Institute of Technology", "shape": "circle"}, {"color": "#6600ff", "id": "Nation", "label": "Nation", "shape": "circle"}, {"color": "#6600ff", "id": "Italy", "label": "Italy", "shape": "circle"}, {"color": "#6600ff", "id": "Piedmont", "label": "Piedmont", "shape": "circle"}, {"color": "#6600ff", "id": "Italian Parliament", "label": "Italian Parliament", "shape": "circle"}, {"color": "#6600ff", "id": "Law", "label": "Law", "shape": "circle"}, {"color": "#6600ff", "id": "Maurizio Molinari", "label": "Maurizio Molinari", "shape": "circle"}, {"color": "#6600ff", "id": "La Repubblica", "label": "La Repubblica", "shape": "circle"}, {"color": "#6600ff", "id": "Europe", "label": "Europe", "shape": "circle"}, {"color": "#6600ff", "id": "France", "label": "France", "shape": "circle"}, {"color": "#6600ff", "id": "Ferrari", "label": "Ferrari", "shape": "circle"}, {"color": "#6600ff", "id": "Automotive industry", "label": "Automotive industry", "shape": "circle"}, {"color": "#6600ff", "id": "Mountain", "label": "Mountain", "shape": "circle"}, {"color": "#6600ff", "id": "Ryan Reynolds", "label": "Ryan Reynolds", "shape": "circle"}, {"color": "#6600ff", "id": "TechWeek (magazine)", "label": "TechWeek (magazine)", "shape": "circle"}, {"color": "#6600ff", "id": "Turin", "label": "Turin", "shape": "circle"}, {"color": "#6600ff", "id": "Fiat", "label": "Fiat", "shape": "circle"}, {"color": "#6600ff", "id": "Agnelli family", "label": "Agnelli family", "shape": "circle"}, {"color": "#6600ff", "id": "Agnelli", "label": "Agnelli", "shape": "circle"}, {"color": "#6600ff", "id": "Altos Labs", "label": "Altos Labs", "shape": "circle"}, {"color": "#6600ff", "id": "Biotechnology", "label": "Biotechnology", "shape": "circle"}, {"color": "#6600ff", "id": "United States", "label": "United States", "shape": "circle"}, {"color": "#6600ff", "id": "Alec Ross", "label": "Alec Ross", "shape": "circle"}, {"color": "#6600ff", "id": "Hillary Clinton", "label": "Hillary Clinton", "shape": "circle"}, {"color": "#6600ff", "id": "Pisa", "label": "Pisa", "shape": "circle"}, {"color": "#6600ff", "id": "Pescara", "label": "Pescara", "shape": "circle"}, {"color": "#6600ff", "id": "Thierry Breton", "label": "Thierry Breton", "shape": "circle"}, {"color": "#6600ff", "id": "European Commissioner for Internal Market", "label": "European Commissioner for Internal Market", "shape": "circle"}, {"color": "#6600ff", "id": "Mykhailo Fedorov", "label": "Mykhailo Fedorov", "shape": "circle"}, {"color": "#6600ff", "id": "Musixmatch", "label": "Musixmatch", "shape": "circle"}, {"color": "#6600ff", "id": "Infrastructure", "label": "Infrastructure", "shape": "circle"}, {"color": "#6600ff", "id": "Member state", "label": "Member state", "shape": "circle"}, {"color": "#6600ff", "id": "3D printing", "label": "3D printing", "shape": "circle"}, {"color": "#6600ff", "id": "Digitization", "label": "Digitization", "shape": "circle"}, {"color": "#6600ff", "id": "Bologna Business School", "label": "Bologna Business School", "shape": "circle"}, {"color": "#6600ff", "id": "Integrated circuit", "label": "Integrated circuit", "shape": "circle"}, {"color": "#6600ff", "id": "Federico Faggin", "label": "Federico Faggin", "shape": "circle"}, {"color": "#6600ff", "id": "Metaverse", "label": "Metaverse", "shape": "circle"}, {"color": "#6600ff", "id": "Achille Lauro", "label": "Achille Lauro", "shape": "circle"}, {"color": "#6600ff", "id": "Fentanyl", "label": "Fentanyl", "shape": "circle"}, {"color": "#6600ff", "id": "Opioid", "label": "Opioid", "shape": "circle"}, {"color": "#6600ff", "id": "Drug", "label": "Drug", "shape": "circle"}, {"color": "#6600ff", "id": "Cannabis", "label": "Cannabis", "shape": "circle"}, {"color": "#6600ff", "id": "Psychoactive drug", "label": "Psychoactive drug", "shape": "circle"}, {"color": "#6600ff", "id": "Methadone", "label": "Methadone", "shape": "circle"}, {"color": "#6600ff", "id": "Opiate", "label": "Opiate", "shape": "circle"}, {"color": "#6600ff", "id": "Hydromorphone", "label": "Hydromorphone", "shape": "circle"}, {"color": "#6600ff", "id": "Heroin", "label": "Heroin", "shape": "circle"}, {"color": "#6600ff", "id": "Buprenorphine", "label": "Buprenorphine", "shape": "circle"}, {"color": "#6600ff", "id": "Morphine", "label": "Morphine", "shape": "circle"}, {"color": "#6600ff", "id": "Agonist", "label": "Agonist", "shape": "circle"}, {"color": "#6600ff", "id": "Centers for Disease Control and Prevention", "label": "Centers for Disease Control and Prevention", "shape": "circle"}, {"color": "#6600ff", "id": "Laura Poitras", "label": "Laura Poitras", "shape": "circle"}, {"color": "#6600ff", "id": "Golden Lion", "label": "Golden Lion", "shape": "circle"}, {"color": "#6600ff", "id": "79th Venice International Film Festival", "label": "79th Venice International Film Festival", "shape": "circle"}, {"color": "#6600ff", "id": "Mexico", "label": "Mexico", "shape": "circle"}, {"color": "#6600ff", "id": "China", "label": "China", "shape": "circle"}, {"color": "#6600ff", "id": "COVID-19 pandemic", "label": "COVID-19 pandemic", "shape": "circle"}, {"color": "#6600ff", "id": "Society of the United States", "label": "Society of the United States", "shape": "circle"}, {"color": "#6600ff", "id": "Addiction", "label": "Addiction", "shape": "circle"}, {"color": "#6600ff", "id": "Abuse", "label": "Abuse", "shape": "circle"}, {"color": "#6600ff", "id": "Rita Levi-Montalcini", "label": "Rita Levi-Montalcini", "shape": "circle"}, {"color": "#6600ff", "id": "Nobel Prize", "label": "Nobel Prize", "shape": "circle"}, {"color": "#6600ff", "id": "La Provincia Pavese", "label": "La Provincia Pavese", "shape": "circle"}, {"color": "#6600ff", "id": "Marketing", "label": "Marketing", "shape": "circle"}, {"color": "#6600ff", "id": "Business development", "label": "Business development", "shape": "circle"}, {"color": "#6600ff", "id": "Kerosene", "label": "Kerosene", "shape": "circle"}, {"color": "#6600ff", "id": "Fuel", "label": "Fuel", "shape": "circle"}, {"color": "#6600ff", "id": "Franco Malerba", "label": "Franco Malerba", "shape": "circle"}, {"color": "#6600ff", "id": "Astronaut", "label": "Astronaut", "shape": "circle"}, {"color": "#6600ff", "id": "Hydrogen", "label": "Hydrogen", "shape": "circle"}, {"color": "#6600ff", "id": "Oxygen", "label": "Oxygen", "shape": "circle"}, {"color": "#6600ff", "id": "Methane", "label": "Methane", "shape": "circle"}, {"color": "#6600ff", "id": "Berlin", "label": "Berlin", "shape": "circle"}, {"color": "#6600ff", "id": "Moscow", "label": "Moscow", "shape": "circle"}, {"color": "#6600ff", "id": "President of the United States", "label": "President of the United States", "shape": "circle"}, {"color": "#6600ff", "id": "Joe Biden", "label": "Joe Biden", "shape": "circle"}, {"color": "#6600ff", "id": "Nord Stream 1", "label": "Nord Stream 1", "shape": "circle"}, {"color": "#6600ff", "id": "Baltic Sea", "label": "Baltic Sea", "shape": "circle"}, {"color": "#6600ff", "id": "2", "label": "2", "shape": "circle"}, {"color": "#6600ff", "id": "Intergovernmental Panel on Climate Change", "label": "Intergovernmental Panel on Climate Change", "shape": "circle"}, {"color": "#6600ff", "id": "Climate change", "label": "Climate change", "shape": "circle"}, {"color": "#6600ff", "id": "Giulio Natta", "label": "Giulio Natta", "shape": "circle"}, {"color": "#6600ff", "id": "Polytechnic University of Milan", "label": "Polytechnic University of Milan", "shape": "circle"}, {"color": "#6600ff", "id": "University", "label": "University", "shape": "circle"}, {"color": "#6600ff", "id": "Sharing", "label": "Sharing", "shape": "circle"}, {"color": "#6600ff", "id": "Circular economy", "label": "Circular economy", "shape": "circle"}, {"color": "#6600ff", "id": "Startup company", "label": "Startup company", "shape": "circle"}, {"color": "#6600ff", "id": "Venture capital", "label": "Venture capital", "shape": "circle"}, {"color": "#6600ff", "id": "Unicorn", "label": "Unicorn", "shape": "circle"}, {"color": "#6600ff", "id": "Fiat 500", "label": "Fiat 500", "shape": "circle"}, {"color": "#6600ff", "id": "Stellantis", "label": "Stellantis", "shape": "circle"}, {"color": "#6600ff", "id": "Worldcon", "label": "Worldcon", "shape": "circle"}, {"color": "#6600ff", "id": "Chicago", "label": "Chicago", "shape": "circle"}, {"color": "#6600ff", "id": "80th World Science Fiction Convention", "label": "80th World Science Fiction Convention", "shape": "circle"}, {"color": "#6600ff", "id": "Whispers Under Ground", "label": "Whispers Under Ground", "shape": "circle"}, {"color": "#6600ff", "id": "Ben Aaronovitch", "label": "Ben Aaronovitch", "shape": "circle"}, {"color": "#6600ff", "id": "2015", "label": "2015", "shape": "circle"}, {"color": "#6600ff", "id": "Kadono", "label": "Kadono", "shape": "circle"}, {"color": "#6600ff", "id": "Children\u0027s literature", "label": "Children\u0027s literature", "shape": "circle"}, {"color": "#6600ff", "id": "Japan", "label": "Japan", "shape": "circle"}, {"color": "#6600ff", "id": "The Tatami Galaxy", "label": "The Tatami Galaxy", "shape": "circle"}, {"color": "#6600ff", "id": "Complete Poems", "label": "Complete Poems", "shape": "circle"}, {"color": "#6600ff", "id": "Anne Sexton", "label": "Anne Sexton", "shape": "circle"}, {"color": "#6600ff", "id": "Among Others", "label": "Among Others", "shape": "circle"}, {"color": "#6600ff", "id": "Jo Walton", "label": "Jo Walton", "shape": "circle"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Google Account", "label": "owned by", "title": "owned by", "to": "Google"}, {"arrows": "to", "from": "Google", "label": "owner of", "title": "owner of", "to": "Google Account"}, {"arrows": "to", "from": "Autocomplete", "label": "part of", "title": "part of", "to": "Google Search"}, {"arrows": "to", "from": "Google Account", "label": "has part", "title": "has part", "to": "Google Search"}, {"arrows": "to", "from": "Google Search", "label": "part of", "title": "part of", "to": "Google Account"}, {"arrows": "to", "from": "Google Account", "label": "use", "title": "use", "to": "Google Search"}, {"arrows": "to", "from": "Smartphone", "label": "use", "title": "use", "to": "Social media"}, {"arrows": "to", "from": "Smartphone", "label": "instance of", "title": "instance of", "to": "Social media"}, {"arrows": "to", "from": "Social media", "label": "used by", "title": "used by", "to": "Smartphone"}, {"arrows": "to", "from": "Michelangelo", "label": "notable work", "title": "notable work", "to": "Mona Lisa"}, {"arrows": "to", "from": "Michelangelo", "label": "notable work", "title": "notable work", "to": "David"}, {"arrows": "to", "from": "Mona Lisa", "label": "creator", "title": "creator", "to": "Michelangelo"}, {"arrows": "to", "from": "David", "label": "creator", "title": "creator", "to": "Michelangelo"}, {"arrows": "to", "from": "Uffizi", "label": "location", "title": "location", "to": "Florence"}, {"arrows": "to", "from": "Giovanni da San Giovanni", "label": "has works in the collection", "title": "has works in the collection", "to": "Uffizi"}, {"arrows": "to", "from": "Past", "label": "opposite of", "title": "opposite of", "to": "Present"}, {"arrows": "to", "from": "Present", "label": "opposite of", "title": "opposite of", "to": "Past"}, {"arrows": "to", "from": "Past", "label": "different from", "title": "different from", "to": "Present"}, {"arrows": "to", "from": "Present", "label": "different from", "title": "different from", "to": "Past"}, {"arrows": "to", "from": "Head louse", "label": "drug used for treatment", "title": "drug used for treatment", "to": "Vaccine"}, {"arrows": "to", "from": "Vaccine", "label": "instance of", "title": "instance of", "to": "Technology"}, {"arrows": "to", "from": "Ospedale degli Innocenti", "label": "located in the administrative territorial entity", "title": "located in the administrative territorial entity", "to": "Florence"}, {"arrows": "to", "from": "Ghirlandaio", "label": "notable work", "title": "notable work", "to": "Adoration of the Magi"}, {"arrows": "to", "from": "Adoration of the Magi", "label": "creator", "title": "creator", "to": "Ghirlandaio"}, {"arrows": "to", "from": "Historian", "label": "subclass of", "title": "subclass of", "to": "Writer"}, {"arrows": "to", "from": "Massacre of the Innocents", "label": "depicts", "title": "depicts", "to": "Orphan"}, {"arrows": "to", "from": "Writer", "label": "has part", "title": "has part", "to": "Historian"}, {"arrows": "to", "from": "IT Week", "label": "point in time", "title": "point in time", "to": "2022"}, {"arrows": "to", "from": "Ukraine", "label": "capital", "title": "capital", "to": "Kyiv"}, {"arrows": "to", "from": "Kyiv", "label": "country", "title": "country", "to": "Ukraine"}, {"arrows": "to", "from": "Admir Masic", "label": "educated at", "title": "educated at", "to": "Massachusetts Institute of Technology"}, {"arrows": "to", "from": "Admir Masic", "label": "employer", "title": "employer", "to": "Massachusetts Institute of Technology"}, {"arrows": "to", "from": "Ukraine", "label": "instance of", "title": "instance of", "to": "Nation"}, {"arrows": "to", "from": "Italy", "label": "contains administrative territorial entity", "title": "contains administrative territorial entity", "to": "Piedmont"}, {"arrows": "to", "from": "Piedmont", "label": "country", "title": "country", "to": "Italy"}, {"arrows": "to", "from": "Italian Parliament", "label": "country", "title": "country", "to": "Italy"}, {"arrows": "to", "from": "Law", "label": "applies to jurisdiction", "title": "applies to jurisdiction", "to": "Italy"}, {"arrows": "to", "from": "Maurizio Molinari", "label": "employer", "title": "employer", "to": "La Repubblica"}, {"arrows": "to", "from": "Italy", "label": "part of", "title": "part of", "to": "Europe"}, {"arrows": "to", "from": "Italy", "label": "continent", "title": "continent", "to": "Europe"}, {"arrows": "to", "from": "France", "label": "continent", "title": "continent", "to": "Europe"}, {"arrows": "to", "from": "Ferrari", "label": "industry", "title": "industry", "to": "Automotive industry"}, {"arrows": "to", "from": "Ferrari", "label": "product or material produced", "title": "product or material produced", "to": "Automotive industry"}, {"arrows": "to", "from": "Mountain", "label": "founded by", "title": "founded by", "to": "Ryan Reynolds"}, {"arrows": "to", "from": "TechWeek (magazine)", "label": "location", "title": "location", "to": "Turin"}, {"arrows": "to", "from": "TechWeek (magazine)", "label": "located in the administrative territorial entity", "title": "located in the administrative territorial entity", "to": "Turin"}, {"arrows": "to", "from": "Fiat", "label": "owned by", "title": "owned by", "to": "Agnelli family"}, {"arrows": "to", "from": "Fiat", "label": "owned by", "title": "owned by", "to": "Agnelli"}, {"arrows": "to", "from": "Altos Labs", "label": "industry", "title": "industry", "to": "Biotechnology"}, {"arrows": "to", "from": "Altos Labs", "label": "country", "title": "country", "to": "United States"}, {"arrows": "to", "from": "Alec Ross", "label": "employer", "title": "employer", "to": "Hillary Clinton"}, {"arrows": "to", "from": "Pisa", "label": "country", "title": "country", "to": "Italy"}, {"arrows": "to", "from": "Pescara", "label": "country", "title": "country", "to": "Italy"}, {"arrows": "to", "from": "Italy", "label": "capital", "title": "capital", "to": "Pisa"}, {"arrows": "to", "from": "Thierry Breton", "label": "position held", "title": "position held", "to": "European Commissioner for Internal Market"}, {"arrows": "to", "from": "Mykhailo Fedorov", "label": "country of citizenship", "title": "country of citizenship", "to": "Ukraine"}, {"arrows": "to", "from": "Musixmatch", "label": "country", "title": "country", "to": "Italy"}, {"arrows": "to", "from": "Musixmatch", "label": "founded by", "title": "founded by", "to": "Alec Ross"}, {"arrows": "to", "from": "Technology", "label": "part of", "title": "part of", "to": "Infrastructure"}, {"arrows": "to", "from": "Italy", "label": "instance of", "title": "instance of", "to": "Member state"}, {"arrows": "to", "from": "3D printing", "label": "use", "title": "use", "to": "Digitization"}, {"arrows": "to", "from": "3D printing", "label": "facet of", "title": "facet of", "to": "Digitization"}, {"arrows": "to", "from": "Alec Ross", "label": "employer", "title": "employer", "to": "Bologna Business School"}, {"arrows": "to", "from": "Alec Ross", "label": "educated at", "title": "educated at", "to": "Bologna Business School"}, {"arrows": "to", "from": "Integrated circuit", "label": "discoverer or inventor", "title": "discoverer or inventor", "to": "Federico Faggin"}, {"arrows": "to", "from": "Metaverse", "label": "creator", "title": "creator", "to": "Achille Lauro"}, {"arrows": "to", "from": "Metaverse", "label": "discoverer or inventor", "title": "discoverer or inventor", "to": "Achille Lauro"}, {"arrows": "to", "from": "Metaverse", "label": "author", "title": "author", "to": "Achille Lauro"}, {"arrows": "to", "from": "Fentanyl", "label": "instance of", "title": "instance of", "to": "Opioid"}, {"arrows": "to", "from": "Fentanyl", "label": "instance of", "title": "instance of", "to": "Drug"}, {"arrows": "to", "from": "Cannabis", "label": "subclass of", "title": "subclass of", "to": "Psychoactive drug"}, {"arrows": "to", "from": "Cannabis", "label": "instance of", "title": "instance of", "to": "Psychoactive drug"}, {"arrows": "to", "from": "Methadone", "label": "subclass of", "title": "subclass of", "to": "Opiate"}, {"arrows": "to", "from": "Fentanyl", "label": "subclass of", "title": "subclass of", "to": "Opiate"}, {"arrows": "to", "from": "Hydromorphone", "label": "subclass of", "title": "subclass of", "to": "Opiate"}, {"arrows": "to", "from": "Heroin", "label": "subclass of", "title": "subclass of", "to": "Opiate"}, {"arrows": "to", "from": "Buprenorphine", "label": "subclass of", "title": "subclass of", "to": "Opiate"}, {"arrows": "to", "from": "Morphine", "label": "subclass of", "title": "subclass of", "to": "Opiate"}, {"arrows": "to", "from": "Buprenorphine", "label": "subject has role", "title": "subject has role", "to": "Opiate"}, {"arrows": "to", "from": "Morphine", "label": "subject has role", "title": "subject has role", "to": "Opiate"}, {"arrows": "to", "from": "Opioid", "label": "subclass of", "title": "subclass of", "to": "Agonist"}, {"arrows": "to", "from": "Centers for Disease Control and Prevention", "label": "country", "title": "country", "to": "United States"}, {"arrows": "to", "from": "Centers for Disease Control and Prevention", "label": "subsidiary", "title": "subsidiary", "to": "Centers for Disease Control and Prevention"}, {"arrows": "to", "from": "Centers for Disease Control and Prevention", "label": "parent organization", "title": "parent organization", "to": "Centers for Disease Control and Prevention"}, {"arrows": "to", "from": "Laura Poitras", "label": "award received", "title": "award received", "to": "Golden Lion"}, {"arrows": "to", "from": "79th Venice International Film Festival", "label": "winner", "title": "winner", "to": "Laura Poitras"}, {"arrows": "to", "from": "Mexico", "label": "shares border with", "title": "shares border with", "to": "China"}, {"arrows": "to", "from": "COVID-19 pandemic", "label": "country", "title": "country", "to": "Society of the United States"}, {"arrows": "to", "from": "Addiction", "label": "subclass of", "title": "subclass of", "to": "Abuse"}, {"arrows": "to", "from": "Rita Levi-Montalcini", "label": "award received", "title": "award received", "to": "Nobel Prize"}, {"arrows": "to", "from": "Nobel Prize", "label": "winner", "title": "winner", "to": "Rita Levi-Montalcini"}, {"arrows": "to", "from": "La Provincia Pavese", "label": "located in the administrative territorial entity", "title": "located in the administrative territorial entity", "to": "Piedmont"}, {"arrows": "to", "from": "Marketing", "label": "has part", "title": "has part", "to": "Business development"}, {"arrows": "to", "from": "Business development", "label": "part of", "title": "part of", "to": "Marketing"}, {"arrows": "to", "from": "2022", "label": "point in time", "title": "point in time", "to": "2022"}, {"arrows": "to", "from": "Kerosene", "label": "instance of", "title": "instance of", "to": "Fuel"}, {"arrows": "to", "from": "Franco Malerba", "label": "occupation", "title": "occupation", "to": "Astronaut"}, {"arrows": "to", "from": "Kerosene", "label": "has part", "title": "has part", "to": "Hydrogen"}, {"arrows": "to", "from": "Kerosene", "label": "has part", "title": "has part", "to": "Oxygen"}, {"arrows": "to", "from": "Methane", "label": "has part", "title": "has part", "to": "Oxygen"}, {"arrows": "to", "from": "Berlin", "label": "twinned administrative body", "title": "twinned administrative body", "to": "Moscow"}, {"arrows": "to", "from": "Moscow", "label": "twinned administrative body", "title": "twinned administrative body", "to": "Berlin"}, {"arrows": "to", "from": "President of the United States", "label": "officeholder", "title": "officeholder", "to": "Joe Biden"}, {"arrows": "to", "from": "Joe Biden", "label": "position held", "title": "position held", "to": "President of the United States"}, {"arrows": "to", "from": "Nord Stream 1", "label": "located in or next to body of water", "title": "located in or next to body of water", "to": "Baltic Sea"}, {"arrows": "to", "from": "2", "label": "located in or next to body of water", "title": "located in or next to body of water", "to": "Baltic Sea"}, {"arrows": "to", "from": "Intergovernmental Panel on Climate Change", "label": "field of work", "title": "field of work", "to": "Climate change"}, {"arrows": "to", "from": "Giulio Natta", "label": "educated at", "title": "educated at", "to": "Polytechnic University of Milan"}, {"arrows": "to", "from": "Giulio Natta", "label": "employer", "title": "employer", "to": "Polytechnic University of Milan"}, {"arrows": "to", "from": "Polytechnic University of Milan", "label": "instance of", "title": "instance of", "to": "University"}, {"arrows": "to", "from": "Sharing", "label": "part of", "title": "part of", "to": "Circular economy"}, {"arrows": "to", "from": "Sharing", "label": "facet of", "title": "facet of", "to": "Circular economy"}, {"arrows": "to", "from": "Startup company", "label": "subclass of", "title": "subclass of", "to": "Venture capital"}, {"arrows": "to", "from": "Unicorn", "label": "subclass of", "title": "subclass of", "to": "Startup company"}, {"arrows": "to", "from": "Fiat 500", "label": "manufacturer", "title": "manufacturer", "to": "Stellantis"}, {"arrows": "to", "from": "Worldcon", "label": "located in the administrative territorial entity", "title": "located in the administrative territorial entity", "to": "Chicago"}, {"arrows": "to", "from": "80th World Science Fiction Convention", "label": "instance of", "title": "instance of", "to": "Worldcon"}, {"arrows": "to", "from": "Whispers Under Ground", "label": "author", "title": "author", "to": "Ben Aaronovitch"}, {"arrows": "to", "from": "2015", "label": "point in time", "title": "point in time", "to": "2015"}, {"arrows": "to", "from": "Kadono", "label": "genre", "title": "genre", "to": "Children\u0027s literature"}, {"arrows": "to", "from": "Kadono", "label": "country of origin", "title": "country of origin", "to": "Japan"}, {"arrows": "to", "from": "The Tatami Galaxy", "label": "country of origin", "title": "country of origin", "to": "Japan"}, {"arrows": "to", "from": "Complete Poems", "label": "author", "title": "author", "to": "Anne Sexton"}, {"arrows": "to", "from": "Among Others", "label": "author", "title": "author", "to": "Jo Walton"}, {"arrows": "to", "from": "Jo Walton", "label": "notable work", "title": "notable work", "to": "Among Others"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0.2,
+            "damping": 0.09,
+            "nodeDistance": 200,
+            "springConstant": 0.05,
+            "springLength": 200
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
