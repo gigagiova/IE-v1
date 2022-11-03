@@ -1,5 +1,4 @@
 from pyvis.network import Network
-
 from information import get_wikipedia_data
 
 
@@ -33,8 +32,9 @@ class KB:
                               source_data["article_publish_date"])
 
     def add_relation(self, r, article_title, article_publish_date):
-        # check on wikipedia
+        # gets a list of the two entities of the relationship [head, tail]
         candidate_entities = [r["head"], r["tail"]]
+        # get wikipedia data for the two entities
         entities = [get_wikipedia_data(ent) for ent in candidate_entities]
 
         # if one entity does not exist, stop

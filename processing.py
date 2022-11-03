@@ -1,5 +1,8 @@
 import math
+
+import neuralcoref
 import torch
+import coreferee, spacy
 from newspaper import ArticleException
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
@@ -11,6 +14,10 @@ from information import get_article
 tokenizer = AutoTokenizer.from_pretrained("Babelscape/rebel-large")
 # load the actual model
 model = AutoModelForSeq2SeqLM.from_pretrained("Babelscape/rebel-large")
+# English transformer pipeline (roberta-base)
+nlp = spacy.load('en_core_web_sm')
+# add coreference resolution to our pipeline
+neuralcoref.add_to_pipe(nlp)
 
 
 def extract_relations_from_model_output(text):
@@ -61,8 +68,19 @@ def extract_relations_from_model_output(text):
 
 
 def from_text_to_kb(text, article_url, span_length=128, article_title=None, article_publish_date=None):
+
+    doc = nlp(text)
+
+    print("--- text: ---")
+    print(text)
+    print("--- chains: ---")
+    doc._.coref_chains.print()
+    print("--- clusters: ---")
+    print(doc._.coref_clusters)
+    print("--- resolved: ---")
+    print(doc._.coref_resolved)
     # tokenize whole text to be processed
-    inputs = tokenizer([text], return_tensors="pt")
+    inputs = tokenizer([text], return_tensors="pt", truncation=True)
 
     # compute span boundaries
     num_tokens = len(inputs["input_ids"][0])

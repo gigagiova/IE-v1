@@ -1,5 +1,3 @@
-import collections
-
 import wikipedia
 from GoogleNews import GoogleNews
 from newspaper import Article
